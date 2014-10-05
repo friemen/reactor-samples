@@ -23,6 +23,14 @@
                         (+ x 10)
                         (+ x y2)))))
 
+(defn make-calculator
+  []
+  (r/setup-network "z=x*(x+y)"
+                   x (r/behavior 0)
+                   y (r/behavior 0)
+                   z (r/lift (* x (+ x y 2)))))
+
+
 ;; ---------------------------------------------------------------------------
 ;; simple processing chain
 
@@ -55,6 +63,34 @@
 #_ (r/complete! rand-ints)
 
 
+
+(defn stock-price
+  []
+  (rand-nth (range 1 10)))
+
+(defn increasing?
+  [xs]
+  (->> xs
+       (map vector (drop 1 xs))
+       (every? (partial apply >))))
+
+(defn send-mail!
+  [prices]
+  (println "Increasing prices!" prices))
+
+
+#_(def n (r/network "price-checker"))
+
+#_(r/with n (->> (r/sample 1000 stock-price)
+                 (r/subscribe println)
+                 (r/scan (fn [buf p]
+                           (conj (vec (drop (- (count buf) 2) buf))
+                                 p))
+                         [])
+                 (r/subscribe println)
+                 (r/filter #(>= (count %) 3))
+                 (r/filter increasing?)
+                 (r/subscribe send-mail!)))
 
 
 ;; ---------------------------------------------------------------------------
