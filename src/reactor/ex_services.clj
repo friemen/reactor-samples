@@ -16,7 +16,7 @@
 
 (defn stockprice-or-default
   [_]
-  (->> (r/merge (r/just (r/in-future stockprice))
+  (->> (r/merge (r/eval (r/in-future stockprice))
                 (->> -1 r/just (r/delay 1000)))
        (r/take 1)))
 

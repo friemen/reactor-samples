@@ -31,6 +31,20 @@
                    z (r/lift (* x (+ x y 2)))))
 
 
+(defn make-decision
+  []
+  (r/setup-network ""
+                   weather (r/behavior nil)
+                   temp    (r/behavior 21)
+                   vehicle (r/lift (case weather
+                                     "sunshine" "bicycle"
+                                     "rain"     "bicycle"
+                                     "snow"     "car"
+                                     "undefined"))))
+
+#_ (def c (make-decision))
+#_ (r/push! c :weather "snow")
+
 ;; ---------------------------------------------------------------------------
 ;; simple processing chain
 
@@ -68,6 +82,13 @@
   []
   (rand-nth (range 1 10)))
 
+
+(defn sliding-buffer
+  [n]
+  (fn [buf x]
+    (conj (vec (drop (- (count buf) (dec n)) buf)) x)))
+
+
 (defn increasing?
   [xs]
   (->> xs
@@ -83,10 +104,7 @@
 
 #_(r/with n (->> (r/sample 1000 stock-price)
                  (r/subscribe println)
-                 (r/scan (fn [buf p]
-                           (conj (vec (drop (- (count buf) 2) buf))
-                                 p))
-                         [])
+                 (r/scan (sliding-buffer 3) [])
                  (r/subscribe println)
                  (r/filter #(>= (count %) 3))
                  (r/filter increasing?)

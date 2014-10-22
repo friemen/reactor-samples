@@ -5,4 +5,4 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [com.miglayout/miglayout-swing "4.2"]
-                 [reactor "0.7.0"]])
+                 [reactor "0.7.2"]])
